@@ -20,9 +20,13 @@ export default {
 .menu{
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 100%;
     height: 80px;
     background-color: darkgreen;
     color: aliceblue;
+    list-style: none;
+    gap: 1rem;
+
 }
 </style>

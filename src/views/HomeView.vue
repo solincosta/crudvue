@@ -1,23 +1,27 @@
 <template>
   <div class="home">
     <MiMenu></MiMenu>
-    <MiMenu></MiMenu>
-    <MiMenu></MiMenu>
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <MiBanner></MiBanner>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 import MiMenu from '@/components/MiMenu.vue'
+import MiBanner from '@/components/MiBanner.vue'
 
 export default {
   name: 'HomeView',
   components: {
-    HelloWorld,
-    MiMenu
+    MiMenu,
+    MiBanner
   }
 }
 </script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+</style>
