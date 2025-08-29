@@ -27,6 +27,5 @@ export default {
     color: aliceblue;
     list-style: none;
     gap: 1rem;
-
 }
 </style>
