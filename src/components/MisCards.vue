@@ -2,13 +2,13 @@
     <div class="contenedor">
 
         <div v-for="pais in paises" :key="pais.id" class="carta">
-            <img :src="require(`@/assets/${pais.url}`)" alt="" class="imagen-contenedor">
-            <div @click="mostrarPais(pais.nombre)" class="nombre-contenedor">{{ pais.nombre }}</div>
-            <div v-if="pais.habitantes > tazaHabitantesMinima" class="habitantes-contenedor verde">{{ pais.habitantes }}</div>
+
+            <img :src="pais.url_imagen" alt="" class="imagen-contenedor">
+            <div  class="nombre-contenedor">{{ pais.nombre }}</div>
+            <div v-if="pais.habitantes > tazaHabitantesMinima" class="habitantes-contenedor verde">{{ pais.habitantes }}
+            </div>
             <div v-else class="habitantes-contenedor rojo">{{ pais.habitantes }}</div>
         </div>
-
-      
     </div>
 </template>
 
@@ -20,41 +20,56 @@ export default {
     data() {
         return {
             tazaHabitantesMinima: 10000000,
+
             paises: [
-                {
-                    id: 1,
-                    nombre: "NORUEGA",
-                    url: "paisaje-1.png",
-                    habitantes: 9567890
-                },
-                {
-                    id: 2,
-                    nombre: "DINAMARCA",
-                    url: "paisaje-2.jpg",
-                    habitantes: 11567890
-                },
-                {
-                    id: 3,
-                    nombre: "CANADA",
-                    url: "paisaje-3.jpg",
-                    habitantes: 16590890
-                },
+                // {
+                //     id: 1,
+                //     nombre: "NORUEGA",
+                //     url: "paisaje-1.png",
+                //     habitantes: 9567890,
+                //     descripcion: "Noruega es un país escandinavo que incluye montañas, glaciares y profundos fiordos costeros. Oslo, su capital, es una ciudad de áreas verdes y museos. En el Museo de barcos vikingos de Oslo, se muestran navíos vikingos preservados del siglo IX. Bergen, con coloridas casas de madera, es el punto de partida de los cruceros hacia el sorprendente fiordo de Sogn. Noruega también es famosa por la pesca, el excursionismo y el esquí, especialmente en el centro olímpico Lillehammer. "
+                // },
+                // {
+                //     id: 2,
+                //     nombre: "DINAMARCA",
+                //     url: "paisaje-2.jpg",
+                //     habitantes: 11567890,
+                //     descripcion: "Dinamarca es un país escandinavo que abarca la península de Jutlandia y varias islas. Está conectado con Suecia a través del puente de Öresund. Copenhague, su capital, cuenta con palacios reales y el colorido puerto de Nyhavn, junto con el parque de atracciones Tívoli y la icónica estatua de La Sirenita. Odense es la ciudad natal del escritor Hans Christian Andersen, con un centro medieval con calles de adoquines y casas con entramado de madera"
+                // },
+                // {
+                //     id: 3,
+                //     nombre: "CANADA",
+                //     url: "paisaje-3.jpg",
+                //     habitantes: 16590890,
+                //     descripcion: "Canadá es el país norteamericano que se extiende desde los Estados Unidos en el sur hasta el círculo polar ártico en el norte. Las ciudades principales incluyen la enorme Toronto, Vancouver, el centro cinematográfico de la costa oeste, las ciudades de habla francesa Montreal y Quebec, y la capital Ottawa. Las vastas franjas de naturaleza de Canadá incluyen el Parque Nacional Banff ubicado en un lago en las Montañas Rocosas. También incluye las cataratas del Niágara, un famoso grupo de enormes"
+                // },
             ]
         }
     },
 
     //Aquí van las funciones
     methods: {
-        mostrarPais(pais) {
-            alert("CLIC EN EL PAIS " + pais);
-            // alert("HOLA " + this.nombre);
+        mostrarPais: async function () {
+            let self = this;
+            await this.axios.get('http://cobuses.com.co/APIV2/model/destinos.php?dato=getallpaises')
+                .then(function (response) {
+                    console.log(response.data);
+                    self.paises = response.data;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+                .finally(function () {
+                });
+
         }
     },
 
-    //INICIALIZADOR
-    created() {
-        // this.hola();
-    }
+//INICIALIZADOR
+created() {
+    // this.hola();
+    this.mostrarPais();
+}
 }
 </script>
 
@@ -77,7 +92,9 @@ export default {
     height: 100%;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     border-radius: 5% 5% 0 0;
+    position: relative;
 }
+
 
 .imagen-contenedor {
     width: 100%;
@@ -111,11 +128,11 @@ export default {
     color: white;
 }
 
-.verde{
+.verde {
     background-color: rgb(0, 69, 0);
 }
 
-.rojo{
-     background-color: rgb(241, 5, 5);
+.rojo {
+    background-color: rgb(241, 5, 5);
 }
 </style>
