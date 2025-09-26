@@ -1,26 +1,54 @@
 <template>
     <div class="contenedor">
 
-        <div v-for="pais in paises" :key="pais.id" class="carta">
-
+        <!-- <div v-for="pais in paises" :key="pais.id" class="carta">
             <img :src="pais.url_imagen" alt="" class="imagen-contenedor">
             <div  class="nombre-contenedor">{{ pais.nombre }}</div>
             <div v-if="pais.habitantes > tazaHabitantesMinima" class="habitantes-contenedor verde">{{ pais.habitantes }}
             </div>
             <div v-else class="habitantes-contenedor rojo">{{ pais.habitantes }}</div>
-        </div>
+        </div> -->
+
+        <!-- <ButtonPrime>BOTON PRIMEVUE</ButtonPrime>
+        <ButtonPrime label="Info" severity="info" />
+        <RatingPrime v-model="rating" />
+        <SliderPrime v-model="slider" class="w-56" />
+        <TextArea v-model="textoArea" rows="5" cols="30" /> -->
+
+        <DataTable :value="estudiantes" tableStyle="min-width: 50rem">
+            <ColumnTable field="cedula" header="Cedula"></ColumnTable>
+            <ColumnTable field="nombre" header="Nombre"></ColumnTable>
+            <ColumnTable>
+                <template #body="slotProps">
+                    <ButtonPrime @click="verEstudiante(slotProps.data)" label="Consultar" severity="info" />
+                </template>
+            </ColumnTable>
+
+        </DataTable>
+
+
+
+        <DialogPrime v-model:visible="modalVisible" modal header="Ver estudiante" :style="{ width: '50rem' }">
+           {{ estudianteSeleccionado }}
+        </DialogPrime>
     </div>
 </template>
 
 <script>
+
 export default {
     name: 'MiCards',
 
     //   Aquí inicializo mis variables
     data() {
         return {
+            modalVisible: false,
+            estudianteSeleccionado: "",
             tazaHabitantesMinima: 10000000,
-
+            slider: null,
+            rating: null,
+            textoArea: "TEXTO CUALQUIERA",
+            estudiantes: [],
             paises: [
                 // {
                 //     id: 1,
@@ -49,12 +77,12 @@ export default {
 
     //Aquí van las funciones
     methods: {
-        mostrarPais: async function () {
+        mostrarEstudiantes: async function () {
             let self = this;
-            await this.axios.get('http://cobuses.com.co/APIV2/model/destinos.php?dato=getallpaises')
+            await this.axios.get('http://cobuses.com.co/APIV2/model/estudiante.php?dato=getallestudiantes')
                 .then(function (response) {
                     console.log(response.data);
-                    self.paises = response.data;
+                    self.estudiantes = response.data;
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -62,14 +90,20 @@ export default {
                 .finally(function () {
                 });
 
+        },
+
+        verEstudiante: function (estudiante) {
+            this.modalVisible = true;
+            this.estudianteSeleccionado = estudiante.nombre
+
         }
     },
 
-//INICIALIZADOR
-created() {
-    // this.hola();
-    this.mostrarPais();
-}
+    //INICIALIZADOR
+    created() {
+        // this.hola();
+        this.mostrarEstudiantes();
+    }
 }
 </script>
 
@@ -81,10 +115,10 @@ created() {
 }
 
 .contenedor {
-    display: flex;
+    /* display: flex;
     flex-direction: row;
     gap: 1rem;
-    height: 300px;
+    height: 300px; */
 }
 
 .carta {
