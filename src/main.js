@@ -17,6 +17,8 @@ import Textarea from 'primevue/textarea';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const app = createApp(App).use(router)
 app.use(VueAxios, axios)
@@ -31,6 +33,9 @@ app.component('DataTable', DataTable);
 app.component('ColumnTable', Column);
 
 app.component('DialogPrime', Dialog);
+app.component('InputText', InputText);
+app.component('ToggleSwitch', ToggleSwitch);
+
 
 // ESTO EN NUEVO
 app.use(PrimeVue, {

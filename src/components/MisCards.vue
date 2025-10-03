@@ -15,6 +15,8 @@
         <SliderPrime v-model="slider" class="w-56" />
         <TextArea v-model="textoArea" rows="5" cols="30" /> -->
 
+        <ButtonPrime @click="abrirFormulario()" label="Nuevo" severity="success" />
+
         <DataTable :value="estudiantes" tableStyle="min-width: 50rem">
             <ColumnTable field="cedula" header="Cedula"></ColumnTable>
             <ColumnTable field="nombre" header="Nombre"></ColumnTable>
@@ -29,7 +31,19 @@
 
 
         <DialogPrime v-model:visible="modalVisible" modal header="Ver estudiante" :style="{ width: '50rem' }">
-           {{ estudianteSeleccionado }}
+
+        </DialogPrime>
+
+        <DialogPrime v-model:visible="modalGuardarVisible" modal header="Guardar estudiante"
+            :style="{ width: '50rem' }">
+            <div class="formulario">
+                <InputText class="campo" placeholder="Digite N° de Cédula" type="text" v-model="estudiante.cedula" />
+                <InputText class="campo" placeholder="Digite Nombre" type="text" v-model="estudiante.nombre" />
+                <ToggleSwitch class="campo" v-model="estudiante.matriculado" />
+                <ButtonPrime v-if="accionGuardar" class="campo" @click="guardarEstudiante()" label="Guardar" severity="success" />
+                <ButtonPrime v-else class="campo" @click="guardarEstudiante()" label="Actualizar" severity="success" />
+            </div>
+
         </DialogPrime>
     </div>
 </template>
@@ -42,6 +56,13 @@ export default {
     //   Aquí inicializo mis variables
     data() {
         return {
+            estudiante: {
+                cedula: null,
+                nombre: "",
+                matriculado: true
+            },
+            accionGuardar: true,
+            modalGuardarVisible: false,
             modalVisible: false,
             estudianteSeleccionado: "",
             tazaHabitantesMinima: 10000000,
@@ -92,10 +113,67 @@ export default {
 
         },
 
-        verEstudiante: function (estudiante) {
-            this.modalVisible = true;
-            this.estudianteSeleccionado = estudiante.nombre
+        guardarEstudiante: async function () {
+            //let self = this;
+            let urlAPI = 'http://cobuses.com.co/APIV2/model/estudiante.php?dato=insertestudiante';
+            let parametros = {
+                nombre: this.estudiante.nombre,
+                cedula: parseInt(this.estudiante.cedula),
+                matriculado: this.estudiante.matriculado
+            }
 
+            
+
+            if(!this.accionGuardar){
+                urlAPI = 'http://cobuses.com.co/APIV2/model/estudiante.php?dato=updateestudiante';
+            }
+
+            console.log(typeof(this.estudiante.cedula));
+            console.log(typeof(this.estudiante.nombre));
+            console.log(typeof(this.estudiante.matriculado));
+            console.log(urlAPI);
+
+            await this.axios.post(urlAPI,
+                parametros)
+                .then(function (response) {
+                    console.log(response.data);
+                    console.log(response.status);
+                    console.log(response);
+                    // console.log(response.data);
+                    // self.estudiantes = response.data;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+                .finally(function () {
+                });
+
+        },
+
+        abrirFormulario: function () {
+            this.modalGuardarVisible = true;
+            this.accionGuardar = true;
+
+            this.estudiante = {
+                cedula: null,
+                nombre: "",
+                matriculado: true
+            };
+
+
+        },
+
+        verEstudiante: function (estudiante) {
+            this.modalGuardarVisible = true;
+            this.accionGuardar = false;
+            this.estudiante.cedula = estudiante.cedula;
+            this.estudiante.nombre = estudiante.nombre;
+
+            if(estudiante.matriculado == 1){
+                this.estudiante.matriculado = true;
+            } else{
+                this.estudiante.matriculado = false;
+            }
         }
     },
 
@@ -112,6 +190,18 @@ export default {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+.formulario {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.campo {
+    width: 80%;
+    margin: 0 10%;
 }
 
 .contenedor {
