@@ -23,6 +23,7 @@
             <ColumnTable>
                 <template #body="slotProps">
                     <ButtonPrime @click="verEstudiante(slotProps.data)" label="Consultar" severity="info" />
+                    <ButtonPrime @click="eliminarEstudiante(slotProps.data)" label="Eliminar" severity="danger" />
                 </template>
             </ColumnTable>
 
@@ -40,11 +41,15 @@
                 <InputText class="campo" placeholder="Digite N° de Cédula" type="text" v-model="estudiante.cedula" />
                 <InputText class="campo" placeholder="Digite Nombre" type="text" v-model="estudiante.nombre" />
                 <ToggleSwitch class="campo" v-model="estudiante.matriculado" />
-                <ButtonPrime v-if="accionGuardar" class="campo" @click="guardarEstudiante()" label="Guardar" severity="success" />
+                <ButtonPrime v-if="accionGuardar" class="campo" @click="guardarEstudiante()" label="Guardar"
+                    severity="success" />
                 <ButtonPrime v-else class="campo" @click="guardarEstudiante()" label="Actualizar" severity="success" />
             </div>
 
         </DialogPrime>
+
+
+        <ToastPrime />
     </div>
 </template>
 
@@ -114,7 +119,17 @@ export default {
         },
 
         guardarEstudiante: async function () {
-            //let self = this;
+            //
+
+            if (this.estudiante.cedula === null) {
+                this.$toast.add({ severity: 'warn', summary: 'Validación', detail: 'Debe digitar una cedula válida', life: 3000 });
+                return;
+            }
+
+            if (this.estudiante.nombre === "") {
+                this.$toast.add({ severity: 'warn', summary: 'Validación', detail: 'Debe digitar un nombre válido', life: 3000 });
+            }
+
             let urlAPI = 'http://cobuses.com.co/APIV2/model/estudiante.php?dato=insertestudiante';
             let parametros = {
                 nombre: this.estudiante.nombre,
@@ -122,16 +137,13 @@ export default {
                 matriculado: this.estudiante.matriculado
             }
 
-            
 
-            if(!this.accionGuardar){
+
+            if (!this.accionGuardar) {
                 urlAPI = 'http://cobuses.com.co/APIV2/model/estudiante.php?dato=updateestudiante';
             }
 
-            console.log(typeof(this.estudiante.cedula));
-            console.log(typeof(this.estudiante.nombre));
-            console.log(typeof(this.estudiante.matriculado));
-            console.log(urlAPI);
+            let self = this;
 
             await this.axios.post(urlAPI,
                 parametros)
@@ -139,6 +151,40 @@ export default {
                     console.log(response.data);
                     console.log(response.status);
                     console.log(response);
+                    if (response.status == 200) {
+                        self.modalGuardarVisible = false;
+                        self.$toast.add({ severity: 'success', summary: 'Confirmación', detail: 'Estudiante Agregado Exitosamente', life: 3000 });
+                    }
+                    // console.log(response.data);
+                    // self.estudiantes = response.data;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+                .finally(function () {
+                });
+
+        },
+
+        eliminarEstudiante: async function (estudiante) {
+            //
+            let urlAPI = 'http://cobuses.com.co/APIV2/model/estudiante.php?dato=deletestudiante';
+            let parametros = {
+                cedula: parseInt(estudiante.cedula)
+            }
+
+            let self = this;
+
+            await this.axios.post(urlAPI,
+                parametros)
+                .then(function (response) {
+                    console.log(response.data);
+                    console.log(response.status);
+                    console.log(response);
+                    if (response.status == 200) {
+                        self.modalGuardarVisible = false;
+                        self.$toast.add({ severity: 'success', summary: 'Confirmación', detail: 'Estudiante Eliminado Exitosamente', life: 3000 });
+                    }
                     // console.log(response.data);
                     // self.estudiantes = response.data;
                 })
@@ -151,6 +197,7 @@ export default {
         },
 
         abrirFormulario: function () {
+            //this.$toast.add({ severity: 'info', summary: 'Info', detail: 'Message Content', life: 3000 });
             this.modalGuardarVisible = true;
             this.accionGuardar = true;
 
@@ -169,9 +216,9 @@ export default {
             this.estudiante.cedula = estudiante.cedula;
             this.estudiante.nombre = estudiante.nombre;
 
-            if(estudiante.matriculado == 1){
+            if (estudiante.matriculado == 1) {
                 this.estudiante.matriculado = true;
-            } else{
+            } else {
                 this.estudiante.matriculado = false;
             }
         }

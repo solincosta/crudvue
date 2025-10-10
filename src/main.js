@@ -19,6 +19,9 @@ import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import ToggleSwitch from 'primevue/toggleswitch';
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
+import Tag from 'primevue/tag';
 
 const app = createApp(App).use(router)
 app.use(VueAxios, axios)
@@ -36,6 +39,10 @@ app.component('DialogPrime', Dialog);
 app.component('InputText', InputText);
 app.component('ToggleSwitch', ToggleSwitch);
 
+app.component('ToastPrime', Toast);
+app.component('TagPrime', Tag);
+
+app.use(ToastService);
 
 // ESTO EN NUEVO
 app.use(PrimeVue, {
